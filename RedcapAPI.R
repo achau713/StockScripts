@@ -161,16 +161,14 @@ SearchDataDictionary <- function(DataDictionaryList, QueryString){
   # SearchDataDictionary(AllDataDicts, "ATQ")
   # SearchDataDictionary(AllDataDicts, SampleFields)
   
-  # if a single string supplied, add word boundaries to the beginning and end of the phrase for exact word matching
-  if(length(QueryString == 1)){
-    QueryString <- paste0("\\b", QueryString, "\\b")
-  }
-  
   # when multiple strings are supplied, condense to one string 
   if(length(QueryString) > 1){
     # add word boundaries in between words
     QueryString <- paste(QueryString, collapse = "\\b|\\b")
     # add word boundaries to beginning and end of string
+    QueryString <- paste0("\\b", QueryString, "\\b")
+  } else{
+    # if a single string supplied, add word boundaries to the beginning and end of the phrase for exact word matching
     QueryString <- paste0("\\b", QueryString, "\\b")
   }
 
