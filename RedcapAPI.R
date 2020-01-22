@@ -179,7 +179,7 @@ SearchDataDictionary <- function(DataDictionaryList, QueryString){
   # applies filter to every column within a single data dictionary 
   # and returns rows where any of the variables have QueryString present
   FilteredDataDictionary <- map(DataDictionaryList,
-                                ~filter_all(., any_vars(str_detect(., fixed(QueryString, ignore_case = TRUE))))) %>% 
+                                ~filter_all(., any_vars(str_detect(., regex(QueryString, ignore_case = TRUE))))) %>% 
     # disregard empty tibbles in output
     discard(function(x) nrow(x) == 0) %>% 
     map(., ~select(., field_name, field_label, form_name)) 
