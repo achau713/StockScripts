@@ -1,5 +1,5 @@
-# This script includes functions to establish a connection to the REDCap API, grab data from REDCap
-# via the REDCap API, and to subset the datasets. 
+# This script includes functions to establish a connection to the REDCAP API, grab data from REDCAP
+# via the REDCAP API, and to subset the datasets. 
 
 
 library(REDCapR)
@@ -67,7 +67,6 @@ ReadProjects <- function(uri,
     print(paste("Unable to load dataset from:", 
                 names(list_tokens)[list_tokens == token]))
   }
-  
   )
   return(output)
 }
@@ -82,11 +81,28 @@ ReadMetadata <- function(uri = "https://ci-redcap.hs.uci.edu/api/",
                          forms = NULL,
                          list_tokens = NULL){
   
+  # This function reads in the metadata from a REDCAP project via the REDCAP API.
+  
+  # Input:
+  # 1. uri: a link to the API
+  # 2. token: a string granting access to a REDCAP project via the REDCAP API
+  # 3. fields: a string or a vector of strings. Indicates desired fields to query from REDCAP project. 
+  # 4. forms: a string or a vector of strings. Indicates desired forms to query from REDCAP project.
+  # 5. list_tokens: a list of tokens granting accessing to multiple REDCAP projects via the REDCAP API
+  
+  #####################################################################
+  
+  # Output: a data frame containing the metadata for a REDCAP project. The data frame will contain 4 columns:
+  # field_name, form_name, field_label, and select_choices_or_calculations. 
+  
+  #####################################################################
+  
   # Example function calls:
   
-  # pregnancyDataDicts <- map(PregnancyTokens, ~ReadMetadata(token = .x, list_tokens = PregnancyTokens))
-  # infantDataDicts <- map(InfantTokens, ~ReadMetadata(token = .x, list_tokens = InfantTokens))
-  # MRADataDicts <- map(MRATokens, ~ReadMetadata(token = .x, list_tokens = MRATokens))
+  # ReadMetaData(uri = "https://COMPANY.COM/API",
+  #              token = "AADUISAN09FS",
+  #              fields = c("ID", "INSULIN_LEVEL", "BP_READING"),
+  #              forms = "2019Data")
   
   
   # Exception Handling:
@@ -94,13 +110,12 @@ ReadMetadata <- function(uri = "https://ci-redcap.hs.uci.edu/api/",
   # If API request unsuccessful, print error message but continue running the function (when using map function)
   output <- tryCatch({
     print(paste("Metadata requested at:", Sys.time()))
-    # use dplyr:;select() to subset specific columns from metadata
-    redcap_metadata_read(
-      redcap_uri = uri,
-      token = token,
-      fields = fields,
-      forms = forms)$data  %>% 
-      select(field_name, form_name, field_label, select_choices_or_calculations)
+    redcap_metadata_read(redcap_uri = uri,
+                         token = token,
+                         fields = fields,
+                         forms = forms)$data  %>% 
+                         # subset specific columns from metadata
+                         select(field_name, form_name, field_label, select_choices_or_calculations)
   },
   
   error = function(e){
@@ -109,7 +124,8 @@ ReadMetadata <- function(uri = "https://ci-redcap.hs.uci.edu/api/",
     print(paste("Unable to load data dictionary from:", 
                 names(list_tokens)[list_tokens == token]))
   }
-  
   )
   return(output)
 }
+
+
