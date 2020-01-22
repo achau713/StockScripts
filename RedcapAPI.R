@@ -162,13 +162,14 @@ SearchDataDictionary <- function(DataDictionaryList, QueryString){
   # SearchDataDictionary(AllDataDicts, SampleFields)
   
   # when multiple strings are supplied, condense to one string 
+  # add word boundaries to the beginning and end of the phrase for exact word matching
   if(length(QueryString) > 1){
     # add word boundaries in between words
     QueryString <- paste(QueryString, collapse = "\\b|\\b")
     # add word boundaries to beginning and end of string
     QueryString <- paste0("\\b", QueryString, "\\b")
   } else{
-    # if a single string supplied, add word boundaries to the beginning and end of the phrase for exact word matching
+    # case when a single string supplied
     QueryString <- paste0("\\b", QueryString, "\\b")
   }
 
@@ -177,7 +178,7 @@ SearchDataDictionary <- function(DataDictionaryList, QueryString){
   # applies filter to every column within a single data dictionary 
   # and returns rows where any of the variables have QueryString present
   FilteredDataDictionary <- map(DataDictionaryList,
-                                ~filter_all(., any_vars(str_detect(., regex(QueryString, ignore_case = TRUE))))) %>% 
+                                ~filter_all(.x, any_vars(str_detect(., regex(QueryString, ignore_case = TRUE))))) %>% 
     # disregard empty tibbles in output
     discard(function(x) nrow(x) == 0) %>% 
     map(., ~select(., field_name, field_label, form_name)) 
