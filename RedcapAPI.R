@@ -161,28 +161,16 @@ SearchDataDictionary <- function(DataDictionaryList, QueryString){
   # SearchDataDictionary(AllDataDicts, "ATQ")
   # SearchDataDictionary(AllDataDicts, SampleFields)
   
-  # Case When a single string is supplied to QueryString
-  if (length(QueryString) == 1){
-    # This query is case insensitive
-    # applies filter to every column within a single data dictionary 
-    # and returns rows where any of the variables have QueryString present
-    FilteredDataDictionary <- map(DataDictionaryList,
-                                  ~filter_all(., any_vars(str_detect(., fixed(QueryString, ignore_case = TRUE))))) %>% 
-      # disregard empty tibbles in output
-      discard(function(x) nrow(x) == 0) %>% 
-      map(., ~select(., field_name, field_label, form_name)) 
-  } 
-  
-  # Case when a vector of strings is supplied to QueryString. 
-  else{
-    QueryString <- paste(QueryString, collapse = "|")
-    # This query is case sensitive! Cannot do multiple string matching within fixed function.
-    FilteredDataDictionary <- map(DataDictionaryList,
-                                  ~filter_all(., any_vars(str_detect(., QueryString) ) ) ) %>%
-      # disregard empty tibbles in output
-      discard(function(x) nrow(x) == 0) %>% 
-      map(., ~select(., field_name)) 
-  }
+
+
+  # This query is case insensitive
+  # applies filter to every column within a single data dictionary 
+  # and returns rows where any of the variables have QueryString present
+  FilteredDataDictionary <- map(DataDictionaryList,
+                                ~filter_all(., any_vars(str_detect(., fixed(QueryString, ignore_case = TRUE))))) %>% 
+    # disregard empty tibbles in output
+    discard(function(x) nrow(x) == 0) %>% 
+    map(., ~select(., field_name, field_label, form_name)) 
   
   # View each sub data dictionary
   imap(FilteredDataDictionary, ~View(.x, title = .y))
